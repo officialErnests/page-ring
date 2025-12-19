@@ -13,9 +13,10 @@
 
   import flower1 from "./assets/flower1.svg";
   import { fade, fly } from "svelte/transition";
-  import { cubicInOut, cubicOut } from "svelte/easing";
+  import { cubicOut } from "svelte/easing";
   import { RING_BASE } from "./lib/consts";
   import useEmbed from "./lib/api.svelte";
+  import { onMount } from "svelte";
 
   // https://stackoverflow.com/a/79718503/22946386
   const container = $host();
@@ -23,18 +24,38 @@
   _style.textContent = styles;
   container.shadowRoot?.appendChild(_style);
 
+  let enabled = $state(false);
   let open = $state(true);
   let showDirectory = $state(false);
 
   let embed = useEmbed();
   const data = $derived(embed.data);
+
+  onMount(() => {
+    window.addEventListener("pagering:enable", () => {
+      if (enabled) {
+        open = true;
+        showDirectory = true;
+      } else {
+        open = true;
+        enabled = true;
+      }
+    });
+  });
+
+  function exitWebring() {
+    open = true;
+    showDirectory = false;
+    enabled = false;
+  }
 </script>
 
-{#if data}
+{#if data && enabled}
   {#if open && showDirectory}
     <div
       role="presentation"
-      transition:fade={{ duration: 300, easing: cubicInOut }}
+      in:fade|global={{ duration: 200 }}
+      out:fade|global={{ duration: 200, delay: 100 }}
       class="z-top fixed inset-0 bg-black/30"
       onclick={() => (showDirectory = false)}
     ></div>
@@ -61,6 +82,13 @@
         >
           <button
             onclick={() => (open = !open)}
+            ondblclick={() => {
+              //  open changes from false -> true -> *false*
+              if (!open) {
+                open = true;
+                showDirectory = true;
+              }
+            }}
             class={[
               "group grid size-8 origin-top-left place-items-center transition hover:bg-neutral-200",
               !open && "-translate-x-1 -translate-y-1",
@@ -131,7 +159,7 @@
                   height="31"
                   class="flex-none"
                 />
-                <div class="min-w-0 flex-1 leading-none">
+                <div class="min-w-0 flex-1 *:leading-none">
                   <p class="mb-0.5 text-sm font-semibold">{member.name}</p>
                   {#if data.current.id === member.id}
                     <div class="text-link flex items-center gap-px text-xs">
@@ -165,6 +193,7 @@
                 read more
               </a>
               <button
+                onclick={exitWebring}
                 class="font-semibold text-red-700 transition hover:text-red-900 hover:underline"
               >
                 exit webring

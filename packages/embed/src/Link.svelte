@@ -45,9 +45,19 @@
         return systemTheme === "dark" ? dark : light;
     }
   };
+
+  function handleClick() {
+    window.dispatchEvent(
+      new CustomEvent("pagering:enable", { bubbles: true, composed: true }),
+    );
+  }
 </script>
 
-<button part="link" class="group flex items-center gap-1.5 text-sm">
+<button
+  part="link"
+  onclick={handleClick}
+  class="group flex items-center gap-1.5 text-sm"
+>
   <img part="logo" src={flower1} alt="" class="h-4 min-w-4" />
   <span class="font-bold">page ring</span>
   <span class="text-current/50">&middot;</span>
