@@ -1,8 +1,9 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "~/layouts/Layout.astro";
 
-import flower1 from "../assets/flower1.svg?url";
-import grass3 from "../assets/grass3.svg?url";
+import { Image } from "astro:assets";
+import flower1 from "~/assets/flower1.svg";
+import grass3 from "~/assets/grass3.svg";
 
 export const prerender = true;
 ---
@@ -10,7 +11,7 @@ export const prerender = true;
 <Layout>
   <main class="mx-auto max-w-4xl p-8 lg:py-12">
     <div class="flex items-center gap-3">
-      <img src={flower1} class="h-12" />
+      <Image src={flower1} alt="" class="h-12 w-auto" />
       <h1 class="text-4xl font-bold">page webring</h1>
     </div>
     <div class="mt-6 space-y-3 text-lg text-pretty text-neutral-600">
@@ -104,12 +105,6 @@ export const prerender = true;
       <pre
         class="my-4 border-2 border-neutral-300 bg-white p-2 px-3 font-mono text-sm text-neutral-800"><code>{
           `<pagering-link />`}</code></pre>
-      <p class="mt-2 text-neutral-600">
-        if you want, there are some extra options you can add:
-      </p>
-      <pre
-        class="my-4 border-2 border-neutral-300 bg-white p-2 px-3 font-mono text-sm text-neutral-800"><code>{
-          `<pagering-link theme="light|dark" />`}</code></pre>
     </section>
 
     <section class="mt-10 border-t-2 border-dashed border-neutral-200 pt-6">
@@ -126,8 +121,8 @@ export const prerender = true;
         class="my-4 border-2 border-neutral-300 bg-white p-2 px-3 font-mono text-sm text-neutral-800"><code>{
           `<script src="https://example.com/embed.js"></script>`}</code></pre>
       <p class="mt-2 text-neutral-600">
-        <strong class="font-semibold text-black">/api/v1/members:</strong> get all
-        members of the webring
+        <strong class="font-semibold text-black">GET /api/v1/members:</strong> get
+        all members of the webring
       </p>
       <pre
         class="my-4 border-2 border-neutral-300 bg-white p-2 px-3 font-mono text-sm text-neutral-800"><code>{
@@ -141,23 +136,43 @@ export const prerender = true;
   ...
 ]`}</code></pre>
       <p class="mt-2 text-neutral-600">
-        <strong class="font-semibold text-black">/api/v1/members/[id]:</strong> get
-        a specific member by id, and the previous and next members
+        <strong class="font-semibold text-black"
+          >GET /api/v1/members/[id]:</strong
+        > get a specific member by id, and the previous and next members
       </p>
       <pre
         class="my-4 border-2 border-neutral-300 bg-white p-2 px-3 font-mono text-sm text-neutral-800"><code>{
-          `[
-  {
-    "prev": { ... },
-    "current": {
-      "id": "acon",
-      "name": "acon",
-      "url": "https://aconlin.com",
-      "buttonUrl": "/buttons/acon.gif"
-    },
-    "next": { ... }
-  }
-]`}</code></pre>
+          `{
+  "current": {
+    "id": "acon",
+    "name": "acon",
+    "url": "https://aconlin.com",
+    "buttonUrl": "/buttons/acon.gif"
+  },
+  "prev": { ... },
+  "next": { ... }
+}`}</code></pre>
+      <p class="mt-2 text-neutral-600">
+        <strong class="font-semibold text-black">GET /api/v1/embed:</strong> get all
+        members, and the current, previous, and next members for the current site.
+      </p>
+      <p class="mt-0.5 text-xs text-neutral-600">
+        If you're calling this from a server, set your 'Origin' header to your
+        site's URL (including http:// or https://)
+      </p>
+      <pre
+        class="my-4 border-2 border-neutral-300 bg-white p-2 px-3 font-mono text-sm text-neutral-800"><code>{
+          `{
+  "current": {
+    "id": "acon",
+    "name": "acon",
+    "url": "https://aconlin.com",
+    "buttonUrl": "/buttons/acon.gif"
+  },
+  "prev": { ... },
+  "next": { ... },
+  "members": [ ... ]
+}`}</code></pre>
     </section>
 
     <section class="mt-10 border-t-2 border-dashed border-neutral-200 pt-6">
@@ -170,6 +185,6 @@ export const prerender = true;
 
   <div class="aspect-1440/68 w-full"></div>
   <div class="fixed inset-x-0 bottom-0 bg-linear-to-t from-white via-white/80">
-    <img src={grass3} class="w-full" />
+    <Image src={grass3} alt="" role="presentation" class="w-full" />
   </div>
 </Layout>

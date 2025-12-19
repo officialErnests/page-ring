@@ -1,6 +1,6 @@
 import { getCollection } from "astro:content";
 import type { APIContext } from "astro";
-import { toMember } from "../../../../lib/member";
+import { toMember } from "~/lib/member";
 
 export async function GET({ params, url }: APIContext) {
   const members = await getCollection("members").then((members) =>
@@ -17,8 +17,8 @@ export async function GET({ params, url }: APIContext) {
   const next = members[entryIdx + 1] || members[0];
 
   return Response.json({
-    prev,
     current,
+    prev,
     next,
   });
 }

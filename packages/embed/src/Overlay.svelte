@@ -4,14 +4,18 @@
   import styles from "./styles.css?inline";
   import "@fontsource-variable/archivo";
 
-  import { ArrowLeftIcon, ArrowRightIcon, ListIcon } from "@lucide/svelte";
+  import {
+    ArrowLeftIcon,
+    ArrowRightIcon,
+    ChevronRightIcon,
+    ListIcon,
+  } from "@lucide/svelte";
 
   import flower1 from "./assets/flower1.svg";
-  import { fade } from "svelte/transition";
-  import { cubicInOut } from "svelte/easing";
-  import { onMount } from "svelte";
-  import { API_BASE, RING_BASE } from "./lib/consts";
-  import { joinURL } from "ufo";
+  import { fade, fly } from "svelte/transition";
+  import { cubicInOut, cubicOut } from "svelte/easing";
+  import { RING_BASE } from "./lib/consts";
+  import useEmbed from "./lib/api.svelte";
 
   // https://stackoverflow.com/a/79718503/22946386
   const container = $host();
@@ -22,155 +26,159 @@
   let open = $state(true);
   let showDirectory = $state(false);
 
-  type Member = {
-    id: string;
-    name: string;
-    url: string;
-    buttonUrl: string;
-  };
-  let members = $state<Member[]>([]);
-
-  onMount(async () => {
-    const res = await fetch(joinURL(API_BASE, "/members"), {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data: Member[] = await res.json();
-    members = data;
-  });
+  let embed = useEmbed();
+  const data = $derived(embed.data);
 </script>
 
-{#if open && showDirectory}
+{#if data}
+  {#if open && showDirectory}
+    <div
+      role="presentation"
+      transition:fade={{ duration: 300, easing: cubicInOut }}
+      class="z-top fixed inset-0 bg-black/30"
+      onclick={() => (showDirectory = false)}
+    ></div>
+  {/if}
   <div
-    role="presentation"
-    transition:fade={{ duration: 300, easing: cubicInOut }}
-    class="z-top fixed inset-0 bg-black/30"
-    onclick={() => (showDirectory = false)}
-  ></div>
-{/if}
-<div
-  class={[
-    "border-border z-top fixed top-6 left-6 border-2 bg-white shadow-lg transition duration-300 ease-in-out",
-    !open && "-translate-x-2 -translate-y-2",
-  ]}
->
-  <div
+    transition:fly={{ duration: 300, easing: cubicOut, x: -4 }}
     class={[
-      " overflow-clip transition-[width,height] duration-300 ease-in-out",
-      !open ? "size-8" : showDirectory ? "h-96 w-72" : "h-10 w-72",
+      "border-border z-top fixed top-6 left-6 border-2 bg-white shadow-lg transition duration-300 ease-in-out",
+      !open && "-translate-x-2 -translate-y-2",
     ]}
   >
-    <div class="relative isolate flex h-96 w-72 flex-col">
-      <div
-        class={[
-          "flex h-10  items-center px-1 transition duration-300 ease-in-out",
-          showDirectory ? "bg-neutral-100" : "bg-white",
-        ]}
-      >
-        <button
-          onclick={() => (open = !open)}
-          class={[
-            "group grid size-8 origin-top-left place-items-center transition hover:bg-neutral-200",
-            !open && "-translate-x-1 -translate-y-1",
-          ]}
-        >
-          <img src={flower1} alt="" class="h-5" />
-          <span class="sr-only">Hide</span>
-        </button>
+    <div
+      class={[
+        " overflow-clip transition-[width,height] duration-300 ease-in-out",
+        !open ? "size-8" : showDirectory ? "h-96 w-72" : "h-10 w-72",
+      ]}
+    >
+      <div class="relative isolate flex h-96 w-72 flex-col">
         <div
           class={[
-            "flex min-w-0 flex-1 origin-left items-center transition duration-300 ease-in-out",
-            !open && "opacity-0",
+            "flex h-10  items-center px-1 transition duration-300 ease-in-out",
+            showDirectory ? "bg-neutral-100" : "bg-white",
           ]}
         >
           <button
-            class="group grid size-8 place-items-center transition hover:bg-neutral-200"
+            onclick={() => (open = !open)}
+            class={[
+              "group grid size-8 origin-top-left place-items-center transition hover:bg-neutral-200",
+              !open && "-translate-x-1 -translate-y-1",
+            ]}
           >
-            <ArrowLeftIcon
-              strokeWidth={2.5}
-              class="size-4 transition not-group-hover:text-neutral-600"
-            />
-            <span class="sr-only">Previous website</span>
-          </button>
-          <p class="min-w-0 flex-1 text-center">
-            <strong>page</strong> by Hack Club
-          </p>
-          <button
-            class="group grid size-8 place-items-center transition hover:bg-neutral-200"
-          >
-            <ArrowRightIcon
-              strokeWidth={2.5}
-              class="size-4 transition not-group-hover:text-neutral-600"
-            />
-            <span class="sr-only">Next website</span>
-          </button>
-          <button
-            onclick={() => (showDirectory = !showDirectory)}
-            class="group grid size-8 place-items-center transition hover:bg-neutral-200"
-          >
-            <ListIcon
-              strokeWidth={2.5}
-              class="size-4 transition not-group-hover:text-neutral-600"
-            />
+            <img src={flower1} alt="" class="h-5" />
             <span class="sr-only">Hide</span>
           </button>
-        </div>
-      </div>
-      <hr class="border-neutral-300" />
-      <div
-        class={[
-          "relative -z-10 min-h-0 flex-1 overflow-y-auto p-1.5 transition",
-          !showDirectory && "-translate-y-4 opacity-0",
-        ]}
-      >
-        <div class="group">
-          {#each members as member (member.id)}
+          <div
+            class={[
+              "flex min-w-0 flex-1 origin-left items-center transition duration-300 ease-in-out",
+              !open && "opacity-0",
+            ]}
+          >
             <a
-              href={member.url}
-              class="ring-link flex items-center gap-2 p-1.5 shadow-none transition group-has-hover:not-hover:opacity-75 hover:bg-teal-100 hover:ring-1"
+              href={data.prev.url}
+              class="group grid size-8 place-items-center transition hover:bg-neutral-200"
             >
-              <img
-                src={member.buttonUrl}
-                alt=""
-                width="88"
-                height="31"
-                class="flex-none"
+              <ArrowLeftIcon
+                strokeWidth={2.5}
+                class="size-4 transition not-group-hover:text-neutral-600"
               />
-              <div class="min-w-0 flex-1 leading-none">
-                <p class="text-sm font-semibold">{member.name}</p>
-                <p class="mt-0.5 text-xs text-neutral-600">
-                  {new URL(member.url).hostname}
-                </p>
-              </div>
+              <span class="sr-only">Previous website</span>
             </a>
-          {/each}
-        </div>
-        <div class="px-1.5 pb-1.5 text-sm">
-          <hr class="my-3 border-dashed border-neutral-200" />
-          <p class="text-neutral-600">
-            this is a collection of personal websites made by members of Hack
-            Club.
-          </p>
-          <div class="mt-1.5 flex gap-3">
+            <p class="min-w-0 flex-1 text-center">
+              <strong>page</strong> by Hack Club
+            </p>
             <a
-              href={RING_BASE}
-              target="_blank"
-              class="text-link font-semibold transition hover:text-teal-900 hover:underline"
+              href={data.next.url}
+              class="group grid size-8 place-items-center transition hover:bg-neutral-200"
             >
-              read more
+              <ArrowRightIcon
+                strokeWidth={2.5}
+                class="size-4 transition not-group-hover:text-neutral-600"
+              />
+              <span class="sr-only">Next website</span>
             </a>
             <button
-              class="font-semibold text-red-700 transition hover:text-red-900 hover:underline"
+              onclick={() => (showDirectory = !showDirectory)}
+              class="group grid size-8 place-items-center transition hover:bg-neutral-200"
             >
-              exit webring
+              <ListIcon
+                strokeWidth={2.5}
+                class="size-4 transition not-group-hover:text-neutral-600"
+              />
+              <span class="sr-only">Hide</span>
             </button>
+          </div>
+        </div>
+        <hr class="border-neutral-300" />
+        <div
+          class={[
+            "relative -z-10 min-h-0 flex-1 overflow-y-auto p-1.5 transition",
+            !showDirectory && "-translate-y-4 opacity-0",
+          ]}
+        >
+          <div class="group">
+            {#each data.members as member (member.id)}
+              <a
+                href={member.url}
+                aria-disabled={data.current.id === member.id}
+                class="ring-link flex items-center gap-2 p-1.5 shadow-none transition group-has-hover:not-hover:opacity-75 hover:bg-teal-100 hover:ring-1 aria-disabled:pointer-events-none"
+              >
+                <img
+                  src={member.buttonUrl}
+                  alt=""
+                  width="88"
+                  height="31"
+                  class="flex-none"
+                />
+                <div class="min-w-0 flex-1 leading-none">
+                  <p class="mb-0.5 text-sm font-semibold">{member.name}</p>
+                  {#if data.current.id === member.id}
+                    <div class="text-link flex items-center gap-px text-xs">
+                      <ChevronRightIcon
+                        strokeWidth={2.5}
+                        class="-ml-0.5 size-3"
+                      />
+                      <span class="font-semibold">current</span>
+                    </div>
+                  {:else}
+                    <p class="text-xs text-neutral-600">
+                      {new URL(member.url).hostname}
+                    </p>
+                  {/if}
+                </div>
+              </a>
+            {/each}
+          </div>
+          <div class="px-1.5 pb-1.5 text-sm">
+            <hr class="my-3 border-dashed border-neutral-200" />
+            <p class="text-neutral-600">
+              this is a collection of personal websites made by members of Hack
+              Club.
+            </p>
+            <div class="mt-1.5 flex gap-3">
+              <a
+                href={RING_BASE}
+                target="_blank"
+                class="text-link font-semibold transition hover:text-teal-900 hover:underline"
+              >
+                read more
+              </a>
+              <button
+                class="font-semibold text-red-700 transition hover:text-red-900 hover:underline"
+              >
+                exit webring
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+{/if}
 
 <style>
+  :host {
+    user-select: none;
+  }
 </style>
