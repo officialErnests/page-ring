@@ -1,15 +1,17 @@
-# page-ysws-webring
+# page webring
 
-To install dependencies:
+A webring for the personal websites of teens in Hack Club.
 
-```bash
-bun install
-```
+_Read more_ (todo: link)
 
-To run:
+## Packages
 
-```bash
-bun run index.ts
-```
+🌐 `packages/website` - the website and API
 
-This project was created using `bun init` in bun v1.3.4. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+🖼️ `packages/embed` - the embed widget
+
+🌸 `packages/gif` - animated GIF of a flower
+
+## Development
+
+Make sure [Bun](https://bun.com/) is installed.

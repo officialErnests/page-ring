@@ -1,6 +1,6 @@
-# gif
+# 🌸 gif
 
-This is the animated gif for the webring widget + website, made with [Remotion](https://www.remotion.dev/).
+An animated GIF of a flower, made with [Remotion](https://www.remotion.dev/).
 
 ## Develop
 

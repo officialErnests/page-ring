@@ -1,6 +1,5 @@
 {
   "name": "page-ysws-webring",
-  "module": "index.ts",
   "type": "module",
   "private": true,
   "workspaces": [
