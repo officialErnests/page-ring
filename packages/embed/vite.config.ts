@@ -6,7 +6,7 @@ import { resolve } from "node:path";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/embed",
+  base: "https://pagering.gideon.sh/embed",
 
   build: {
     lib: {
