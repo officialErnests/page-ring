@@ -1,5 +1,22 @@
+---
+import { format } from "date-fns";
+const commitSha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || "(unknown)";
+const commitMessage =
+  process.env.VERCEL_GIT_COMMIT_MESSAGE || "(no commit message)";
+const deployDate = new Date();
+---
+
 <p class="text-sm text-neutral-600">
   made with <i class="not-italic grayscale">🩶</i> and <i
     class="not-italic grayscale">💻</i
   > in hack club by heygideon. personal website ysws by acon.
+</p>
+
+<p class="text-sm text-neutral-600">
+  this is all <a href="https://github.com/heygideon/page-ring" target="_blank"
+    >open source</a
+  >! commit <span
+    title={commitMessage}
+    class="underline decoration-dotted underline-offset-2">{commitSha}</span
+  > on {format(deployDate, "do MMMM yyyy, HH:mm")}.
 </p>
