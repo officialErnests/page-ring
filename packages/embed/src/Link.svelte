@@ -16,11 +16,15 @@
 
   type ThemeValue = "light" | "dark";
 
-  const { theme = "system" }: { theme: ThemeValue | "system" } = $props();
+  const { theme }: { theme?: ThemeValue | "system" } = $props();
   let systemTheme = $state<ThemeValue>("light");
 
   onMount(() => {
-    if (theme !== "system") return;
+    if (!theme) {
+      console.warn(
+        "[pagering] 'theme' prop will soon be required. please set it to 'light', 'dark', or 'system' depending on your site's background colour.",
+      );
+    }
 
     const handleChange = () => {
       const query = window.matchMedia("(prefers-color-scheme: dark)");
@@ -42,11 +46,13 @@
       case "dark":
         return dark;
       case "system":
+      default:
         return systemTheme === "dark" ? dark : light;
     }
   };
 
   function handleClick() {
+    console.debug("[pagering] event 'pagering:enable' dispatched");
     window.dispatchEvent(
       new CustomEvent("pagering:enable", { bubbles: true, composed: true }),
     );

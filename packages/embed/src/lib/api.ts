@@ -25,15 +25,15 @@ export async function getEmbed() {
     throw new Error(`Failed to fetch /embed: ${res.status}`);
   }
   const data: EmbedResponse = await res.json();
-  console.log(data);
   if (!data.current) {
-    let message = `Member with url "${location.hostname}" not found in webring`;
+    let message = `[pagering] member with url "${location.hostname}" not found in webring`;
     if (location.hostname === "localhost") {
       console.warn(message + " (this is expected when developing locally)");
     } else {
       console.error(message);
     }
   }
+  console.debug("[pagering] embed data:", data);
   return data;
 }
 
@@ -49,10 +49,11 @@ export async function getStatus() {
     credentials: "include",
   });
   if (!res.ok) {
-    throw new Error(`Failed to fetch /embed/status: ${res.status}`);
+    throw new Error(`[pagering] failed to fetch /embed/status: ${res.status}`);
   }
 
   const data: { enabled: boolean } = await res.json();
+  console.debug("[pagering] embed status:", data);
   return data;
 }
 export async function setStatus({ enabled }: { enabled: boolean }) {
@@ -66,6 +67,8 @@ export async function setStatus({ enabled }: { enabled: boolean }) {
     credentials: "include",
   });
   if (!res.ok) {
-    throw new Error(`Failed to set /embed/status: ${res.status}`);
+    throw new Error(`[pagering] failed to set /embed/status: ${res.status}`);
   }
+
+  console.debug("[pagering] set embed status:", { enabled });
 }

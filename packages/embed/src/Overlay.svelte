@@ -36,6 +36,7 @@
     });
 
     const enableHandler = () => {
+      console.debug("[pagering] event 'pagering:enable' received");
       if (enabled) {
         open = true;
         showDirectory = true;
